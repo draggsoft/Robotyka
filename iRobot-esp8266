@@ -1,0 +1,219 @@
+#include <ESP8266WiFi.h>
+ extern "C" {  
+  #include "user_interface.h"
+}
+const char* ssid = "Dlink";
+const char* password = "enzybicum8L!kwiecien2018";
+// vcc zielony
+// gnd niebieski
+
+int ledPin = 16; // GPIO13 Power brazowy
+int ledPin2 = 14; // GPIO15 Dry  zolty
+int ledPin3 = 5; // GPIO12 Wet   pomaranczowy
+WiFiServer server(80);
+ 
+void setup() {
+
+  //  Force the ESP into client-only mode
+  WiFi.mode(WIFI_STA); 
+
+  //  Enable light sleep
+//  wifi_set_sleep_type(LIGHT_SLEEP_T);
+  wifi_set_sleep_type(MODEM_SLEEP_T); 
+  Serial.begin(115200);
+  delay(10);
+ 
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+  pinMode(ledPin2, OUTPUT);
+  digitalWrite(ledPin2, LOW);
+  pinMode(ledPin3, OUTPUT);
+  digitalWrite(ledPin3 , LOW); 
+  // Connect to WiFi network
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+ 
+  WiFi.begin(ssid, password);
+ 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+ 
+  // Start the server
+  server.begin();
+  Serial.println("Server started");
+ 
+  // Print the IP address
+  Serial.print("Use this URL to connect: ");
+  Serial.print("http://");
+  Serial.print(WiFi.localIP());
+  Serial.println("/");
+ 
+}
+ 
+void loop() {
+  // Check if a client has connected
+  WiFiClient client = server.available();
+  if (!client) {
+    return;
+  }
+ 
+  // Wait until the client sends some data
+  Serial.println("new client");
+  while(!client.available()){
+    delay(1);
+  }
+ 
+  // Read the first line of the request
+  String request = client.readStringUntil('\r');
+  Serial.println(request);
+  client.flush();
+ 
+  // Match the request
+ 
+  int value = LOW;
+  delay(100);
+  if (request.indexOf("/LED=ON") > 0)  {
+    digitalWrite(ledPin2, HIGH); // Dry Quick cleaning
+    value = HIGH;
+    delay(1000);
+    digitalWrite(ledPin2, LOW);
+    value = LOW;
+  }
+  if (request.indexOf("/LED2=ON") > 0)  {
+    digitalWrite(ledPin2, HIGH); // End Dry Quick cleaning
+    value = HIGH;
+    delay(100);
+    digitalWrite(ledPin2, LOW);
+    value = LOW;
+  }
+ if (request.indexOf("/LED3=ON") > 0)  {
+    digitalWrite(ledPin3, HIGH);
+    value = HIGH;
+    delay(800);
+    digitalWrite(ledPin3, LOW);
+    value = LOW;
+  }
+  
+ 
+// Set ledPin according to the request
+//digitalWrite(ledPin, value);
+ 
+  // Return the response
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println(""); //  do not forget this one  client.println("      <!DOCTYPE html>   ");
+
+  client.println("  <!DOCTYPE html> ");
+  client.println("  <html>  ");
+  client.println("  <title>iRobot Braava</title>  ");
+  client.println("  <meta name= 'viewport ' content= 'width=device-width, initial-scale=1 '>  ");
+  client.println("  <link rel= 'stylesheet ' href= 'https://www.w3schools.com/w3css/4/w3mobile.css '> ");
+  client.println("     <style>  ");
+  client.println("     .button {  ");
+  client.println("         background-color: white;   ");
+  client.println("         border: 10px inset #0099ff;  ");
+  client.println("         color: #0099ff;  ");
+  client.println("    ");
+  client.println("         text-decoration: none !important;  ");
+  client.println("         display: inline-block;   ");
+  client.println("         font-size: 60px;   ");
+  client.println("         cursor: pointer;   ");
+  client.println("         height: 300px;   ");
+  client.println("         width: 300px;    ");
+  client.println("     }  ");
+  client.println("     .button5:hover {   ");
+  client.println("      background-color: #003d66;  ");
+  client.println("      color: white;   ");
+  client.println("     }      ");
+  client.println("     .header {  ");
+  client.println("      width: 100%;  ");
+  client.println("      overflow: hidden;   ");
+  client.println("      text-align: center; ");
+  client.println("      font-family:  'Segoe UI ',Arial,sans-serif; ");
+  client.println("      font-weight: 400; ");
+  client.println("     }  ");
+  client.println("     .w3-bar {  ");
+  client.println("      background-color: #009688 !important; ");
+  client.println("      text-align: center; ");
+  client.println("      color: white; ");
+  client.println("     }  ");
+  client.println("      ");
+  client.println("     .button5 {border-radius: 100%;}  ");
+  client.println("     </style>   ");
+  client.println("  <body>  ");
+  client.println("    ");
+  client.println("  <nav class= 'w3-sidebar w3-bar-block w3-card ' id= 'mySidebar '>  ");
+  client.println("  <div class= 'w3-container  '> ");
+  client.println("    <span onclick= 'closeSidebar() ' class= 'w3-button w3-display-topright w3-large '>X</span>  ");
+  client.println("    <br>  ");
+  client.println("    <div class= 'w3-padding w3-center '>  ");
+  client.println("    </div>  ");
+  client.println("  </div>  ");
+  client.println("  <a class= 'w3-bar-item w3-button ' href= '# '><h3>Options</h3></a>  ");
+  client.println("  <a class= 'w3-bar-item w3-button ' href= '# '><h3>Schedules</h3></a>  ");
+  client.println("  <a class= 'w3-bar-item w3-button ' href= '# '><h3>Push to start</h3></a>  ");
+  client.println("  </nav>  ");
+  client.println("  <header class= 'w3-top w3-bar  '> ");
+  client.println("    <button class= 'w3-bar-item w3-button w3-xxxlarge  ' onclick= 'openSidebar() '>&#9776;</button> ");
+  client.println("    <h1 class= 'w3-bar-item '>iRobot Braava</h1>  ");
+  client.println("  </header> ");
+  client.println("  <div class= 'w3-container ' style= 'margin-top:90px '>  ");
+  client.println("  <hr>  ");
+  client.println("  <div class= 'w3-cell-row '> ");
+  client.println("    <div class= 'w3-cell ' style= 'width:30% '> ");
+  client.println("      <a href=\"/LED=ON\"\"><button class='button button5'>ON</button></a>  ");
+  client.println("    </div>  ");
+  client.println("    <div class= 'w3-cell w3-container '>  ");
+  client.println("      <h2>Power</h2>  ");
+  client.println("      <h3>Power ON and quick clean.</h3>  ");
+  client.println("    </div>  ");
+  client.println("  </div>    ");
+  client.println("  <hr>  ");
+  client.println("  <div class= 'w3-cell-row '> ");
+  client.println("    <div class= 'w3-cell ' style= 'width:30% '> ");
+  client.println("     <a href=\"/LED2=ON\"\"><button class='button button5'>OFF</button></a>   ");
+  client.println("    </div>  ");
+  client.println("    <div class= 'w3-cell w3-container '>  ");
+  client.println("      <h2>Dry clean</h2>  ");
+  client.println("      <h3>Power OFF.</h3> ");
+  client.println("    </div>  ");
+  client.println("  </div>  ");
+  client.println("  <hr>  ");
+  client.println("  <div class= 'w3-cell-row '> ");
+  client.println("    <div class= 'w3-cell ' style= 'width:30% '> ");
+  client.println("      <a href=\"/LED3=ON\"\"><button class='button button5'>Wet</button></a>  ");
+  client.println("    </div>  ");
+  client.println("    <div class= 'w3-cell w3-container '>  ");
+  client.println("      <h2>Wet clean</h2>  ");
+  client.println("      <h3>Bullshit.</h3> ");
+  client.println("    </div>  ");
+  client.println("  </div>  ");
+  client.println("  <hr>  ");
+  client.println("  </div>  ");
+  client.println("  <footer class= 'w3-container w3-bottom w3-margin-top '> ");
+  client.println("    <h3></h3> ");
+  client.println("  </footer> ");
+  client.println("  <script>  ");
+  client.println("  closeSidebar(); ");
+  client.println("  function openSidebar() {  ");
+  client.println("      document.getElementById( 'mySidebar ').style.display =  'block '; ");
+  client.println("  } ");
+  client.println("  function closeSidebar() { ");
+  client.println("      document.getElementById( 'mySidebar ').style.display =  'none ';  ");
+  client.println("  } ");
+  client.println("  </script> ");
+  client.println("  </body> ");
+
+  client.println("</html>");
+ 
+  delay(1);
+  Serial.println("Client disonnected");
+  Serial.println("");
+ 
+}
