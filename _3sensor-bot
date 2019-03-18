@@ -48,35 +48,35 @@ display.setTextSize(2);
 
 
 //////////////////////////////////////////////////////////////////////////// 
-if(FrontSensor<=20 && LeftSensor<=20)/// lewy sensor i srodkowy
+if(FrontSensor<=17 && LeftSensor<=17)/// lewy sensor i srodkowy
 {  
         display.setCursor(10,45);
         display.print("w Prawo"); 
         wPrawo();
 
 }
-else if(LeftSensor<=10)/// lewy sensor 
+else if(LeftSensor<=13)/// lewy sensor 
 {  
         display.setCursor(10,45);
         display.print("w Prawo"); 
         wPrawo();
 
 }
-else if(FrontSensor<=20 && RightSensor<=20)/// prawy sensor i srodkowy
+else if(FrontSensor<=17 && RightSensor<=17)/// prawy sensor i srodkowy
 {      
         display.setCursor(10,45);
         display.print("w Lewo"); 
         wLewo();
         
 }
-else if(RightSensor<=10)/// prawy sensor 
+else if(RightSensor<=13)/// prawy sensor 
 {      
         display.setCursor(10,45);
         display.print("w Lewo"); 
         wLewo();
         
 }
-else if(FrontSensor<=15 )/// srodkowy - jedz do tylu
+else if(FrontSensor<=17 && FrontSensor>=5)/// srodkowy - jedz do tylu
 {      
         display.setCursor(10,45);
         display.print("do Tylu"); 
@@ -125,16 +125,17 @@ void doTylu(){
         digitalWrite(motor1Pin2, LOW); 
         digitalWrite(motor2Pin1, LOW);
         digitalWrite(motor2Pin2, HIGH);
+        
 }
 void wLewo(){
         digitalWrite(motor1Pin1, LOW); 
-        digitalWrite(motor1Pin2, LOW); 
+        digitalWrite(motor1Pin2, HIGH); 
         digitalWrite(motor2Pin1, LOW);
         digitalWrite(motor2Pin2, HIGH);
 }
 void wPrawo(){
         digitalWrite(motor1Pin1, HIGH); 
         digitalWrite(motor1Pin2, LOW); 
-        digitalWrite(motor2Pin1, LOW);
+        digitalWrite(motor2Pin1, HIGH);
         digitalWrite(motor2Pin2, LOW);
 }
