@@ -48,7 +48,17 @@ display.setTextSize(2);
 
 
 //////////////////////////////////////////////////////////////////////////// 
-if(FrontSensor<=17 && LeftSensor<=17)/// lewy sensor i srodkowy
+if (FrontSensor<7 && RightSensor<7 && LeftSensor<7)
+{
+        display.setCursor(10,45); 
+        display.print("Ewakuacja");         
+        digitalWrite(motor1Pin1, LOW); 
+        digitalWrite(motor1Pin2, HIGH); 
+        digitalWrite(motor2Pin1, LOW);
+        digitalWrite(motor2Pin2, HIGH); 
+        delay(250);
+}
+else if(FrontSensor<=17 && LeftSensor<=17)/// lewy sensor i srodkowy
 {  
         display.setCursor(10,45);
         display.print("w Prawo"); 
@@ -83,6 +93,7 @@ else if(FrontSensor<=17 && FrontSensor>=5)/// srodkowy - jedz do tylu
         doTylu();
         
 }
+
 else  /// w innym wypadku jedz do przodu
 {
         display.setCursor(10,45); 
@@ -90,6 +101,7 @@ else  /// w innym wypadku jedz do przodu
         doPrzodu();
        
 }
+
 delay(5); //////// wyswietlanie danych z czujnikow
   display.setCursor(0, 0);
   display.print("<-- || -->");
